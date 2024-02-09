@@ -1,0 +1,198 @@
+00003634 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 01/02/2024 12:54:40
+
+00000000                             1  *------------------------------------------------------------------------------
+00000000                             2  * Este archivo contiene todo lo relacionado con barriles
+00000000                             3  *------------------------------------------------------------------------------
+00000000                             4  
+00000000  =00000002                  5  NBARS           EQU     2
+00000000                             6  BRPOSX          DS.W    1
+00000002  =00000002                  7  BRVEL           EQU     2
+00000002                             8  
+Line 9 ERROR: Undefined symbol
+00000002= F7EC                       9  BRSINITX        DC.W    SCRWIDTH-CHKSIZE/2, SCRWIDTH-CHKSIZE/2
+Line 10 ERROR: Symbol value differs between first and second pass
+00000004=                           10  BRSINITY        DC.W    18*CHKSIZE-CHKSIZE/2, 9*CHKSIZE-CHKSIZE/2
+Line 11 ERROR: Symbol value differs between first and second pass
+00000004=                           11  BRSLIM          DC.W    4*CHKSIZE+CHKSIZE/2, 4*CHKSIZE+CHKSIZE/2
+Line 12 ERROR: Symbol value differs between first and second pass
+00000004                            12  BRSPOSX         DS.W    2
+Line 13 ERROR: Symbol value differs between first and second pass
+00000004                            13  BRSPOSY         DS.W    2
+Line 14 ERROR: Symbol value differs between first and second pass
+00000004                            14  BRSDIR          DS.B    2
+00000004                            15                  DS.W    0
+00000004                            16  ; -----------------------------------------------------------------------------
+Line 17 ERROR: Symbol value differs between first and second pass
+00000004                            17  BRINIT
+00000004                            18  ; Inicializa el estado del barril
+00000004                            19  ; INPUT    - NONE
+00000004                            20  ; OUTPUT   - NONE
+00000004                            21  ; MODIFIES - NONE
+00000004                            22  ; -----------------------------------------------------------------------------
+00000004                            23  
+00000004  48E7 8080                 24                  MOVEM.L     D0/A0, -(A7) 
+00000008                            25                  
+00000008  303C 0001                 26                  MOVE.W      #NBARS-1, D0
+0000000C  307C 0000                 27                  MOVEA       #0, A0
+00000010                            28  
+Line 29 ERROR: Symbol value differs between first and second pass
+00000010                            29  .LOOP           MOVE.W      BRSINITX(A0), BRSPOSX(A0)
+00000010  3168 0006 0012            30                  MOVE.W      BRSINITY(A0), BRSPOSY(A0)
+00000016  5488                      31                  ADDQ.L      #2, A0
+00000018  51C8 000A                 32                  DBRA        D0, .LOOP
+0000001C                            33  
+0000001C  4CDF 0101                 34                  MOVEM.L     (A7)+, D0/A0
+00000020                            35  
+00000020  4E75                      36                  RTS
+00000022                            37  
+00000022                            38  ; -----------------------------------------------------------------------------
+Line 39 ERROR: Symbol value differs between first and second pass
+00000022                            39  BRUPDT
+00000022                            40  ; Actualiza el estado del barril
+00000022                            41  ; INPUT    - NONE
+00000022                            42  ; OUTPUT   - NONE
+00000022                            43  ; MODIFIES - NONE
+00000022                            44  ; -----------------------------------------------------------------------------
+00000022                            45  
+00000022  48A7 F800                 46                  MOVEM.W     D0-D4, -(A7)
+00000026                            47  
+00000026  3038 0000                 48                  MOVE.W      (BRPOSX), D0
+Line 49 ERROR: Undefined symbol
+0000002A  1239 004DBD16             49                  MOVE.B      (BARCOL), D1
+00000030  5540                      50                  SUBQ.W      #BRVEL, D0
+00000032                            51  
+00000032                            52                  ; Combrobar colisión lado izquierdo
+00000032                            53                  ; de la pantalla
+Line 54 ERROR: Comma expected
+00000032                            54                  CMP.W       #CHKSIZE/2, D0
+00000032  6E00 0024                 55                  BGT         .NOLCOL
+Line 56 ERROR: Comma expected
+00000036                            56                  MOVE.W      #SCRWIDTH-CHKSIZE/2, D0
+00000036                            57  
+Line 58 ERROR: Symbol value differs between first and second pass
+00000036                            58  .NOLCOL
+00000036                            59              ; Colisión con el jugador
+00000036                            60              ; Seguimos el siguiente esquema de condiciones
+00000036                            61              ; If( PLYPOSX - CHKSIZE/2 > BRPOSX + CHKSIZE/2 ) -> No colisión
+00000036                            62              ; If( PLYPOSX + CHKSIZE/2 > BRPOSX - CHKSIZE/2 ) -> No colisión
+00000036                            63              ; If( PLYPOSY - CHKSIZE/2 > BRPOSY + CHKSIZE/2 ) -> No colisión
+00000036                            64              ; If( PLYPOSY + CHKSIZE/2 > BRPOSY - CHKSIZE/2 ) -> No colisión
+00000036                            65              ; Else -> Colisión
+00000036  3400                      66                  MOVE.W      D0, D2
+Line 67 ERROR: Undefined symbol
+00000038  3639 004DBD16             67                  MOVE.W      (PLYPOSX), D3
+Line 68 ERROR: Undefined symbol
+0000003E  3839 004DBD16             68                  MOVE.W      (PLYPOSY), D4
+00000044                            69  
+Line 70 ERROR: Comma expected
+00000044                            70                  ADD.W       #CHKSIZE/2, D2
+Line 71 ERROR: Comma expected
+00000044                            71                  SUB.W       #CHKSIZE/2, D3
+00000044  B642                      72                  CMP.W       D2, D3
+00000046  6E00 005A                 73                  BGT         .NOPLCOL
+0000004A                            74  
+Line 75 ERROR: Undefined symbol
+0000004A  0442 BD16                 75                  SUB.W       #CHKSIZE, D2
+Line 76 ERROR: Undefined symbol
+0000004E  0643 BD16                 76                  ADD.W       #CHKSIZE, D3
+00000052  B642                      77                  CMP.W       D2, D3
+00000054  6D00 004C                 78                  BLT         .NOPLCOL
+00000058                            79  
+Line 80 ERROR: Comma expected
+00000058                            80                  SUB.W       #CHKSIZE/2, D4
+Line 81 ERROR: Invalid syntax
+00000058                            81                  CMP.W       #BRPOSY+CHKSIZE/2, D4
+00000058  6E00 0048                 82                  BGT         .NOPLCOL
+0000005C                            83  
+Line 84 ERROR: Undefined symbol
+0000005C  0644 BD16                 84                  ADD.W       #CHKSIZE, D4
+Line 85 ERROR: Comma expected
+00000060                            85                  CMP.W       #BRPOSY-CHKSIZE/2, D4
+00000060  6D00 0040                 86                  BLT         .NOPLCOL
+00000064                            87  
+00000064  123C 0001                 88                  MOVE.B      #1, D1      ; Hay colisión
+00000068  6000 003C                 89                  BRA         .DONE
+Line 90 ERROR: Symbol value differs between first and second pass
+0000006C                            90  .NOPLCOL
+0000006C  123C 0000                 91                  MOVE.B      #0, D1      ; No hay colisión
+00000070                            92  
+Line 93 ERROR: Symbol value differs between first and second pass
+00000070                            93  .DONE
+00000070  31C0 0000                 94                  MOVE.W      D0, (BRPOSX)
+Line 95 ERROR: Undefined symbol
+00000074  13C1 005455B8             95                  MOVE.B      D1, (BARCOL)
+0000007A                            96  
+0000007A  4C9F 001F                 97                  MOVEM.W     (A7)+, D0-D4
+0000007E  4E75                      98                  RTS
+00000080                            99  
+00000080                           100  ; -----------------------------------------------------------------------------
+Line 101 ERROR: Symbol value differs between first and second pass
+00000080                           101  BRPLOT
+00000080                           102  ; muestra el barril por pantalla
+00000080                           103  ; INPUT    - NONE
+00000080                           104  ; OUTPUT   - NONE
+00000080                           105  ; MODIFIES - NONE
+00000080                           106  ; -----------------------------------------------------------------------------
+00000080                           107  
+00000080  48E7 F800                108                  MOVEM.L     D0-D4, -(A7)
+00000084  4280                     109                  CLR.L       D0
+00000086  4281                     110                  CLR.L       D1
+00000088  4282                     111                  CLR.L       D2
+0000008A  4283                     112                  CLR.L       D3
+0000008C  4284                     113                  CLR.L       D4
+0000008E                           114  
+0000008E                           115                  ; SET FILL COLOR
+0000008E  103C 0051                116                  MOVE.B      #81, D0
+00000092  223C 00004080            117                  MOVE.L      #$00004080, D1
+00000098  4E4F                     118                  TRAP        #15
+0000009A                           119  
+0000009A  3238 0000                120                  MOVE.W      BRPOSX, D1
+Line 121 ERROR: Undefined symbol
+0000009E  343C BD16                121                  MOVE.W      #BRPOSY, D2
+000000A2                           122  
+Line 123 ERROR: Comma expected
+000000A2                           123                  SUB.W       #CHKSIZE/2, D1
+Line 124 ERROR: Comma expected
+000000A2                           124                  SUB.W       #CHKSIZE/2, D2
+000000A2                           125  
+000000A2  3601                     126                  MOVE.W      D1, D3
+000000A4  3802                     127                  MOVE.W      D2, D4
+000000A6                           128  
+Line 129 ERROR: Undefined symbol
+000000A6  0643 BD16                129                  ADDI.W      #CHKSIZE, D3
+Line 130 ERROR: Undefined symbol
+000000AA  0644 BD16                130                  ADDI.W      #CHKSIZE, D4
+000000AE                           131  
+000000AE  103C 0057                132                  MOVE.B      #87, D0
+000000B2  4E4F                     133                  TRAP        #15
+000000B4                           134  
+000000B4  4CDF 001F                135                  MOVEM.L     (A7)+, D0-D4
+000000B8                           136  
+000000B8  4E75                     137                  RTS
+Line 138 WARNING: END directive missing, starting address not set
+
+32 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+BRINIT              18
+BRINIT:LOOP         24
+BRPLOT              B6
+BRPOSX              0
+BRSDIR              16
+BRSINITX            2
+BRSINITY            6
+BRSLIM              A
+BRSPOSX             E
+BRSPOSY             12
+BRUPDT              3C
+BRUPDT:DONE         A6
+BRUPDT:NOLCOL       58
+BRUPDT:NOPLCOL      A2
+BRVEL               2
+NBARS               2

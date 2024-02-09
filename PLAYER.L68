@@ -1,0 +1,270 @@
+00001608 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 30/01/2024 23:25:51
+
+00000000                             1  *------------------------------------------------------------------------------
+00000000                             2  * Este archivo contiene todo lo relacionado con el jugador
+00000000                             3  *------------------------------------------------------------------------------
+00000000                             4  
+00000000  =FFFFFFEF                  5  MAXJUMP     EQU     -17
+00000000  =00000001                  6  GRAVITY     EQU     1
+Line 7 ERROR: Undefined symbol
+00000000                             7  LIMLEFT     EQU     4*CHKSIZE+CHKSIZE/2
+00000000  =00000002                  8  PLYVELX     EQU     2
+00000000                             9  
+Line 10 ERROR: Undefined symbol
+00000000= EC                        10  LIVES       DC.B    INILIVES
+00000001                            11  GROUND      DS.B    1
+00000002                            12  FLOOR       DS.B    1
+00000003                            13  BARCOL      DS.B    1
+00000004                            14              DS.W    0
+00000004                            15  
+00000004                            16  PLYPOSX     DS.W    1
+00000006                            17  PLYPOSY     DS.W    1
+00000008                            18  PLYVELY     DS.W    1
+0000000A                            19  
+0000000A                            20  
+0000000A                            21  ; -----------------------------------------------------------------------------
+0000000A                            22  PLYINIT
+0000000A                            23  ; Inicializa el estado del jugador
+0000000A                            24  ; INPUT    - NONE
+0000000A                            25  ; OUTPUT   - NONE
+0000000A                            26  ; MODIFIES - NONE
+0000000A                            27  ; -----------------------------------------------------------------------------
+0000000A                            28  
+Line 29 ERROR: Comma expected
+0000000A                            29                  MOVE.W      #SCRWIDTH/2, (PLYPOSX)
+Line 30 ERROR: Comma expected
+0000000A                            30                  MOVE.W      #SCRHEIGT-CHKSIZE/2, (PLYPOSY)
+0000000A  4278 0008                 31                  CLR.W       (PLYVELY)
+0000000E  4238 0001                 32                  CLR.B       (GROUND)
+00000012  4238 0002                 33                  CLR.B       (FLOOR)
+00000016  4238 0003                 34                  CLR.B       (BARCOL)
+0000001A                            35  
+0000001A  4E75                      36                  RTS
+0000001C                            37  
+0000001C                            38  ; -----------------------------------------------------------------------------
+Line 39 ERROR: Symbol value differs between first and second pass
+0000001C                            39  PLYUPDT
+0000001C                            40  ; Actualiza el estado del jugador
+0000001C                            41  ; INPUT    - NONE
+0000001C                            42  ; OUTPUT   - NONE
+0000001C                            43  ; MODIFIES - NONE
+0000001C                            44  ; -----------------------------------------------------------------------------
+0000001C                            45  
+0000001C  48A7 FE80                 46                  MOVEM.W         D0-D6/A0, -(A7)
+00000020                            47  
+00000020  3038 0004                 48                  MOVE.W          (PLYPOSX), D0
+00000024  3238 0006                 49                  MOVE.W          (PLYPOSY), D1
+00000028  3A38 0008                 50                  MOVE.W          (PLYVELY), D5
+0000002C  1C38 0001                 51                  MOVE.B          (GROUND), D6
+00000030                            52  
+00000030                            53                  ; ¿Mover izquierda?
+Line 54 ERROR: Undefined symbol
+00000030  0839 0002 005455B8        54                  BTST.B          #2, (KBDVAL)
+00000038  6700 0010                 55                  BEQ             .NO_LEFT
+0000003C  5540                      56                  SUBQ.W          #PLYVELX, D0
+0000003E                            57  
+Line 58 ERROR: Symbol value differs between first and second pass
+0000003E                            58  .NO_LEFT        
+0000003E                            59                  ; ¿Mover derecha?
+Line 60 ERROR: Undefined symbol
+0000003E  0839 0001 005455B8        60                  BTST.B          #1, (KBDVAL)
+00000046  6700 0010                 61                  BEQ             .NO_RIGT
+0000004A  5440                      62                  ADDQ.W          #PLYVELX, D0
+0000004C                            63  
+Line 64 ERROR: Symbol value differs between first and second pass
+0000004C                            64  .NO_RIGT
+0000004C                            65                  ; ¿Salto?
+0000004C  8C38 0002                 66                  OR.B            (FLOOR), D6
+00000050  4A06                      67                  TST.B           D6
+00000052  6700 0022                 68                  BEQ             .NO_JUMP
+Line 69 ERROR: Undefined symbol
+00000056  0839 0003 005455B8        69                  BTST.B          #3, (KBDEDGE)
+0000005E  6700 0016                 70                  BEQ             .NO_JUMP
+00000062  7AEF                      71                  MOVEQ.L         #MAXJUMP, D5
+00000064  11FC 0000 0001            72                  MOVE.B          #0, (GROUND)
+0000006A                            73  
+Line 74 ERROR: Symbol value differs between first and second pass
+0000006A                            74  .NO_JUMP
+0000006A                            75                  ; Combrobar colisión lado derecho
+0000006A                            76                  ; de la pantalla
+Line 77 ERROR: Comma expected
+0000006A                            77                  CMP.W           #SCRWIDTH-CHKSIZE/2, D0
+0000006A  6D00 0016                 78                  BLT             .NORCOL
+Line 79 ERROR: Comma expected
+0000006E                            79                  MOVE.W          #SCRWIDTH-CHKSIZE/2, D0
+0000006E                            80                  
+Line 81 ERROR: Symbol value differs between first and second pass
+0000006E                            81  .NORCOL
+0000006E                            82                  ; Combrobar colisión lado izquierdo
+0000006E                            83                  ; de la pantalla
+Line 84 ERROR: Undefined symbol
+0000006E  B07C BD16                 84                  CMP.W           #LIMLEFT, D0
+00000072  6E00 001A                 85                  BGT             .NOLCOL
+Line 86 ERROR: Undefined symbol
+00000076  303C BD16                 86                  MOVE.W          #LIMLEFT, D0
+0000007A                            87  
+Line 88 ERROR: Symbol value differs between first and second pass
+0000007A                            88  .NOLCOL
+0000007A                            89                  ; Si quiero saltar no hace falta que 
+0000007A                            90                  ; detecte colisión con el suelo
+Line 91 ERROR: Undefined symbol
+0000007A  0839 0003 005455B8        91                  BTST.B          #3, (KBDEDGE)
+00000082  6600 0024                 92                  BNE             .NOFCOL
+00000086                            93                  ; ¿Tocando suelo?
+Line 94 ERROR: Comma expected
+00000086                            94                  CMP.W           #SCRHEIGT-CHKSIZE/2, D1
+00000086  6D00 0020                 95                  BLT             .NOFCOL
+0000008A  11FC 0001 0001            96                  MOVE.B          #1, (GROUND)
+00000090                            97  
+Line 98 ERROR: Symbol value differs between first and second pass
+00000090                            98  .NOFCOL         
+00000090                            99                  ; Comprobar posición Y del jugador
+00000090                           100                  ; si está por debajo del último CHUNK
+00000090                           101                  ; dejamos de comprobar el mapa
+Line 102 ERROR: Comma expected
+00000090                           102                  CMP.W           #SCRHEIGT-CHKSIZE, D1
+00000090  6E00 0070                103                  BGT             .NOSCOL
+00000094                           104  
+00000094                           105                  ; Si queremos saltar, no comprobamos el mapa
+00000094                           106                  ; y fijamos que no lo tocamos
+Line 107 ERROR: Undefined symbol
+00000094  0839 0003 005455B8       107                  BTST.B          #3, (KBDEDGE)
+0000009C  6700 0028                108                  BEQ             .CHEKMAP
+000000A0  11FC 0000 0002           109                  MOVE.B          #0, (FLOOR)
+000000A6  6000 005A                110                  BRA             .NOSCOL
+000000AA                           111  
+Line 112 ERROR: Symbol value differs between first and second pass
+000000AA                           112  .CHEKMAP        
+000000AA                           113                  ; Si vamos hacia abajo no comprobamos el mapa
+000000AA                           114                  ; para poder atravesarlo
+Line 115 ERROR: Undefined symbol
+000000AA  0839 0000 005455B8       115                  BTST.B          #0, (KBDEDGE)
+000000B2  6600 004E                116                  BNE             .NOSCOL
+000000B6                           117  
+000000B6                           118                  ; Comprobamos colisión con el mapa
+000000B6  3400                     119                  MOVE.W          D0, D2
+000000B8  3601                     120                  MOVE.W          D1, D3
+Line 121 ERROR: Comma expected
+000000BA                           121                  ADDI.W          #CHKSIZE/2, D3
+Line 122 ERROR: Undefined symbol
+000000BA  86FC BD16                122                  DIVU            #CHKSIZE, D3
+000000BE  0283 FFFF0000            123                  ANDI.L          #$FFFF0000, D3
+000000C4  6600 003C                124                  BNE             .NOSCOL
+000000C8                           125  
+000000C8  3400                     126                  MOVE.W          D0, D2
+000000CA  3601                     127                  MOVE.W          D1, D3
+000000CC                           128  
+000000CC  EA4A                     129                  LSR.W           #5, D2
+000000CE  EA4B                     130                  LSR.W           #5, D3
+000000D0  3803                     131                  MOVE.W          D3, D4
+000000D2  5243                     132                  ADDQ.W          #1, D3
+000000D4                           133  
+Line 134 ERROR: Undefined symbol
+000000D4  C6FC BD16                134                  MULU.W          #CHKWIDTH, D3
+000000D8  D642                     135                  ADD.W           D2, D3
+000000DA  3043                     136                  MOVEA.W         D3, A0
+Line 137 ERROR: Undefined symbol
+000000DC  11E8 BD16 0002           137                  MOVE.B          MAP(A0), (FLOOR)
+000000E2                           138  
+Line 139 ERROR: Symbol value differs between first and second pass
+000000E2                           139  .NOSCOL
+000000E2                           140                  ; Comprobamos colisión con el barril
+000000E2  4A38 0003                141                  TST.B           (BARCOL)
+000000E6  6700 0036                142                  BEQ             .NOBRCOL
+Line 143 ERROR: Comma expected
+000000EA                           143                  MOVE.W          #SCRWIDTH/2, D0
+Line 144 ERROR: Comma expected
+000000EA                           144                  MOVE.W          #SCRHEIGT-CHKSIZE, D1
+000000EA  7A00                     145                  MOVEQ.L         #0, D5
+000000EC  11FC 0000 0002           146                  MOVE.B          #0, (FLOOR)
+000000F2  6000 0058                147                  BRA             .DONE
+Line 148 ERROR: Symbol value differs between first and second pass
+000000F6                           148  .NOBRCOL
+000000F6                           149                  ; Actualizar velocidad y posiciones
+000000F6  4A38 0001                150                  TST.B           (GROUND)
+000000FA  6600 003C                151                  BNE             .NO_FLOR
+000000FE  4A38 0002                152                  TST.B           (FLOOR)
+00000102  6600 0034                153                  BNE             .NO_FLOR
+00000106  BA7C 0001                154                  CMP.W           #1, D5
+0000010A  6C00 002C                155                  BGE             .NO_FLOR
+0000010E  5245                     156                  ADDQ.W          #GRAVITY, D5
+Line 157 ERROR: Symbol value differs between first and second pass
+00000110                           157  .NO_FLOR
+00000110  4A38 0001                158                  TST.B           (GROUND)
+00000114  6600 0032                159                  BNE             .NOT_FAL
+00000118  4A38 0002                160                  TST.B           (FLOOR)
+0000011C  6700 002C                161                  BEQ             .FALL
+Line 162 ERROR: Symbol value differs between first and second pass
+00000120                           162  .NOT_FAL
+00000120  7A00                     163                  MOVEQ.L         #0, D5
+Line 164 ERROR: Symbol value differs between first and second pass
+00000122                           164  .FALL
+00000122  D245                     165                  ADD.W           D5, D1
+00000124                           166  
+Line 167 ERROR: Symbol value differs between first and second pass
+00000124                           167  .DONE           
+00000124  31C0 0004                168                  MOVE.W          D0, (PLYPOSX)
+00000128  31C1 0006                169                  MOVE.W          D1, (PLYPOSY)
+0000012C  31C5 0008                170                  MOVE.W          D5, (PLYVELY)
+00000130                           171  
+00000130  4C9F 017F                172                  MOVEM.W         (A7)+, D0-D6/A0
+00000134                           173  
+00000134  4E75                     174                  RTS
+00000136                           175  
+00000136                           176  ; -----------------------------------------------------------------------------
+Line 177 ERROR: Symbol value differs between first and second pass
+00000136                           177  PLYPLOT
+00000136                           178  ; Muestra el jugador por pantalla
+00000136                           179  ; INPUT    - NONE
+00000136                           180  ; OUTPUT   - NONE
+00000136                           181  ; MODIFIES - NONE
+00000136                           182  ; -----------------------------------------------------------------------------
+00000136                           183  
+00000136  48E7 0080                184                  MOVEM.L     A0, -(A7)
+0000013A                           185  
+Line 186 ERROR: Undefined symbol
+0000013A  41F9 004DBD16            186                  LEA         IMGPLYL, A0
+Line 187 ERROR: Undefined symbol
+00000140  4EB9 004DBD16            187                  JSR         IMGPLOT
+00000146                           188  
+00000146  4CDF 0100                189                  MOVEM.L     (A7)+, A0
+0000014A                           190                  
+0000014A  4E75                     191                  RTS
+0000014C                           192  
+Line 193 WARNING: END directive missing, starting address not set
+
+39 errors detected
+1 warning generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+BARCOL              3
+FLOOR               2
+GRAVITY             1
+GROUND              1
+LIVES               0
+MAXJUMP             FFFFFFEF
+PLYINIT             A
+PLYPLOT             15E
+PLYPOSX             4
+PLYPOSY             6
+PLYUPDT             28
+PLYUPDT:CHEKMAP     C6
+PLYUPDT:DONE        14C
+PLYUPDT:FALL        14A
+PLYUPDT:NOBRCOL     11E
+PLYUPDT:NOFCOL      A8
+PLYUPDT:NOLCOL      8E
+PLYUPDT:NORCOL      82
+PLYUPDT:NOSCOL      102
+PLYUPDT:NOT_FAL     148
+PLYUPDT:NO_FLOR     138
+PLYUPDT:NO_JUMP     76
+PLYUPDT:NO_LEFT     4A
+PLYUPDT:NO_RIGT     58
+PLYVELX             2
+PLYVELY             8
